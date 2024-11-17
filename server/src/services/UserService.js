@@ -39,7 +39,7 @@ const createUser = (newUser) => {
 
 const loginUser = (userLogin) => {
     return new Promise(async(resolve, reject) => {
-        const {name, email, password, confirmPassword, phone} = userLogin
+        const { email, password} = userLogin
         try {
             const checkUser = await User.findOne({
                 email: email
@@ -105,8 +105,79 @@ const updateUser = (id, data) => {
         }
     })
 }
+
+
+const deleteUser = (id, data) => {
+    console.log('id', id)
+    return new Promise(async(resolve, reject) => {
+        try {
+            const idValue = typeof id === 'object' ? id.id : id;
+            const checkUser = await User.findOne({
+                _id: idValue
+            })
+            console.log('checkUser', checkUser)
+            if(checkUser === null){
+                resolve({
+                    status: 'OK',
+                    message: 'The user is not defined'
+                })
+            }
+             await User.findByIdAndDelete(idValue)
+            resolve({
+                status: 'OK',
+                message: 'Delete user susscess',
+            })
+        } catch (e) {
+            reject(e)
+        }
+    })
+}
+
+const getAllUser = () => {
+    return new Promise(async(resolve, reject) => {
+        try {
+            const allUser = await User.find()
+
+            resolve({
+                status: 'OK',
+                message: 'Delete user susscess',
+                data: allUser
+            })
+        } catch (e) {
+            reject(e)
+        }
+    })
+}
+
+const getDetailsUser = (id) => {
+    return new Promise(async(resolve, reject) => {
+        try {
+            const idValue = typeof id === 'object' ? id.id : id;
+            const user = await User.findOne({
+                _id: idValue
+            })
+            if(user === null){
+                resolve({
+                    status: 'OK',
+                    message: 'The user is not defined'
+                })
+            }
+            resolve({
+                status: 'OK',
+                message: 'Delete user susscess',
+                data: user
+            })
+        } catch (e) {
+            reject(e)
+        }
+    })
+}
+
 module.exports = {
     createUser,
     loginUser,
-    updateUser
+    updateUser,
+    deleteUser,
+    getAllUser,
+    getDetailsUser
 }
