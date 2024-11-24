@@ -3,7 +3,7 @@ const bcrypt = require("bcrypt")
 const { genneralAccessToken, genneralRefreshToken } = require("./jwtService");
 const createUser = (newUser) => {
     return new Promise(async(resolve, reject) => {
-        const {name, email, password, confirmPassword, phone} = newUser
+        const {email, password, confirmPassword} = newUser
         try {
             const checkUser = await User.findOne({
                 email: email
@@ -11,17 +11,15 @@ const createUser = (newUser) => {
             if(checkUser !== null)
                 {
                     resolve({
-                        status: 'OK',
+                        status: 'ERR',
                         message: 'The email is already'
                     })
                 }
             const hash =  bcrypt.hashSync(password, 10)
             const createdUser = await User.create({
-                name,
                 email,
                 password: hash,
                 confirmPassword,
-                phone
             })
 
         if(createdUser) {
@@ -47,14 +45,14 @@ const loginUser = (userLogin) => {
             if(checkUser === null)
                 {
                     resolve({
-                        status: 'OK',
+                        status: 'ERR',
                         message: 'The user is not defined'
                     })
                 }
             const comparePassword = bcrypt.compareSync(password, checkUser.password)
             if(!comparePassword){
                 resolve({
-                    status: 'OK',
+                    status: 'ERR',
                     message: 'The password or user is incorrect'
                 })
             }
@@ -164,7 +162,7 @@ const getDetailsUser = (id) => {
             }
             resolve({
                 status: 'OK',
-                message: 'Delete user susscess',
+                message: 'get detail user susscess',
                 data: user
             })
         } catch (e) {
@@ -173,11 +171,14 @@ const getDetailsUser = (id) => {
     })
 }
 
+
+
 module.exports = {
     createUser,
     loginUser,
     updateUser,
     deleteUser,
     getAllUser,
-    getDetailsUser
+    getDetailsUser,
+    
 }

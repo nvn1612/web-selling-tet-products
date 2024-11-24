@@ -1,10 +1,11 @@
 const UserService = require('../services/UserService')
+const JwtService = require('../services/jwtService')
 const createUser = async (req, res) => {
     try {
-        const {name, email, password, confirmPassword, phone} = req.body
+        const {email, password, confirmPassword} = req.body
         const reg = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/
         const isCheckEmail = reg.test(email)
-        if(!name || !email || !password || !confirmPassword || !phone) {
+        if(!email || !password || !confirmPassword) {
             return res.status(200).json({
                 status: 'ERR',
                 message: 'the input is required'
@@ -31,10 +32,10 @@ const createUser = async (req, res) => {
 
 const loginUser = async (req, res) => {
     try {
-        const {name, email, password, confirmPassword, phone} = req.body
+        const {email, password} = req.body
         const reg = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/
         const isCheckEmail = reg.test(email)
-        if(!name || !email || !password || !confirmPassword || !phone) {
+        if( !email || !password ) {
             return res.status(200).json({
                 status: 'ERR',
                 message: 'the input is required'
@@ -44,12 +45,7 @@ const loginUser = async (req, res) => {
                 status: 'ERR',
                 message: 'the input is email'
             })
-        }else if(password !== confirmPassword) {
-            return res.status(200).json({
-                status: 'ERR',
-                message: 'the password is not equal confirmPassword '
-            })
-        }               
+        }              
         const result = await UserService.loginUser(req.body)
         return res.status(200).json(result)
     } catch (e) {
@@ -127,11 +123,30 @@ const getDetailsUser = async (req, res) => {
         })
     }
 }
+
+const refreshToken = async (req, res) => {
+    try {
+        const token = req.headers.token.split(' ')[1]
+        if(!token){
+            return res.status(200).json({
+                status: 'ERR',
+                message: 'The token is required'
+            })
+        }
+        const response = await JwtService.RefreshTokenJwtService(token)
+        return res.status(200).json(response)
+    } catch (e) {
+        return res.status(404).json({
+            message: e
+        })
+    }
+}
 module.exports = {
     createUser,
     loginUser,
     updateUser,
     deleteUser,
     getAllUser,
-    getDetailsUser
+    getDetailsUser,
+    refreshToken
 }
