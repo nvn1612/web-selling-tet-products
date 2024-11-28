@@ -1,8 +1,11 @@
 import React from 'react'
+import { WrapperHeader } from '../Profile/style'
 
 const ProductsPage = () => {
   return (
-    <div>ProductsPage</div>
+    <div >
+      <WrapperHeader>abc</WrapperHeader>
+    </div>
   )
 }
 

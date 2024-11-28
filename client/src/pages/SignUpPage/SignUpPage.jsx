@@ -1,4 +1,4 @@
-import React, {useState} from 'react'
+import React, {useEffect, useState} from 'react'
 import {WrapperContainerRight,WrapperContainerLeft,WrapperTextLight} from './style'
 import InputForm from '../../components/InputForm/InputForm'
 import ButtonComponent from '../../components/ButtonComponent/ButtonComponent'
@@ -8,11 +8,11 @@ import { useNavigate } from "react-router-dom";
 import * as UserService from '../../service/UserService'
 import { useMutationHooks } from '../../hooks/useMutationHook'
 import Loading from '../../components/LoadingComponent/LoadingComponent'
-
+import * as message from "../../components/Message/Message"
 
 const SignUpPage = () => {
   const navigate = useNavigate()
-  const handleNavigateLogin = () => {
+  const handleNavigateSignIn = () => {
     navigate('/sign-in')
   }
 
@@ -40,8 +40,8 @@ const SignUpPage = () => {
       confirmPassword
     })
   }
-  const {data, isPending} = mutation
-
+  const {data, isPending, isSuccess, isError} = mutation
+  
 
   return (
     <div style={{display: 'flex', alignItems:'center', justifyContent:'center', background:'rgba(0,0,0,0.53)', height: '100vh'}}>
@@ -58,7 +58,7 @@ const SignUpPage = () => {
                 onClick={handleSignUp}
                 />  
               </Loading>
-              <p>Bạn đã có tài khoản ? <WrapperTextLight onClick={handleNavigateLogin} >Đăng nhập</WrapperTextLight></p>
+              <p>Bạn đã có tài khoản ? <WrapperTextLight onClick={handleNavigateSignIn} >Đăng nhập</WrapperTextLight></p>
           </WrapperContainerLeft>
         <WrapperContainerRight>
             <Image src={ImageLogo} preview={false} alt='Image-logo' height='203px' width='203px'/>
