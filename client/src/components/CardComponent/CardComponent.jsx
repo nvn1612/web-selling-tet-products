@@ -2,7 +2,17 @@ import React from "react";
 import { WrapperCardStyle,StyleNameProduct, WrapperPriceText, WrapperReportText, WrapperDiscountText } from "./style";
 import {lled} from '@ant-design/icons'
 import Logo from '../../assets/images/logo.jpg'
-const CardComponent = () => {
+const CardComponent = (props) => {
+  const {  
+  countInStock,
+  description,
+  image,
+  name,
+  price,
+  rating,
+  discount,
+  selled,
+  type} = props
   return (
       <WrapperCardStyle
         hoverable
@@ -15,16 +25,16 @@ const CardComponent = () => {
         }
       >
         <img src={Logo} alt="" style={{width: '50px', height: '50px', position: 'absolute', top: '0', left: '0'}}/>
-        <StyleNameProduct>Bánh trưng</StyleNameProduct>
+        <StyleNameProduct>{name}</StyleNameProduct>
         <WrapperReportText>
             <span style={{marginRight: '4px'}}>
-                <span>5</span>
+                <span>{rating}</span>
                 <lled style={{fontSize: '12px', color: 'yellow'}}/>
                 <span> | Đã bán 1000+</span>
             </span>
         </WrapperReportText>
-        <WrapperPriceText>1.000.000đ
-            <WrapperDiscountText> -5%</WrapperDiscountText>
+        <WrapperPriceText>{price}
+            <WrapperDiscountText> {discount || -5}%</WrapperDiscountText>
         </WrapperPriceText>
       </WrapperCardStyle>
   );
