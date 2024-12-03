@@ -3,12 +3,15 @@ const ProductService = require('../services/productService')
 const createProduct = async (req, res) => {
     try {
         const {name, image, type, price, countInStock, rating, description} = req.body
-        if(!name || !image || !type || !price || !countInStock, !rating ) {
+        console.log('req',name);
+        if(!name || !image || !type || !price || !countInStock || !rating || !description) {
             return res.status(200).json({
                 status: 'ERR',
                 message: 'the input is required'
+                
             })
         }
+
         const result = await ProductService.createProduct(req.body)
         return res.status(200).json(result)
     } catch (e) {
