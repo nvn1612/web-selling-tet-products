@@ -3,7 +3,6 @@ const ProductService = require('../services/productService')
 const createProduct = async (req, res) => {
     try {
         const {name, image, type, price, countInStock, rating, description} = req.body
-        console.log('req',name);
         if(!name || !image || !type || !price || !countInStock || !rating || !description) {
             return res.status(200).json({
                 status: 'ERR',
@@ -77,6 +76,24 @@ const deleteProduct = async (req, res) => {
     }
 }
 
+const deleteMany = async (req, res) => {
+    try {
+        const Ids = req.body
+        if(!Ids){
+            return res.status(200).json({
+                status: 'ERR',
+                message: 'The Ids is required'
+            })
+        }
+        const response = await ProductService.deleteManyProduct(Ids)
+        return res.status(200).json(response)
+    } catch (e) {
+        return res.status(404).json({
+            message: e
+        })
+    }
+}
+
 const getAllProduct = async (req, res) => {
     try {
         const {limit, page, sort, filter} = req.query
@@ -89,10 +106,13 @@ const getAllProduct = async (req, res) => {
     }
 }
 
+
+
 module.exports = {
     createProduct,
     updateProduct,
     getDetailsProduct,
     deleteProduct,
-    getAllProduct
+    getAllProduct,
+    deleteMany
 }

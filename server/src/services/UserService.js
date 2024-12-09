@@ -3,7 +3,7 @@ const bcrypt = require("bcrypt")
 const { genneralAccessToken, genneralRefreshToken } = require("./jwtService");
 const createUser = (newUser) => {
     return new Promise(async(resolve, reject) => {
-        const {email, password, confirmPassword} = newUser
+        const {name, phone, email, password, confirmPassword} = newUser
         try {
             const checkUser = await User.findOne({
                 email: email
@@ -17,7 +17,9 @@ const createUser = (newUser) => {
                 }
             const hash =  bcrypt.hashSync(password, 10)
             const createdUser = await User.create({
+                name,
                 email,
+                phone,
                 password: hash,
                 confirmPassword,
             })
@@ -78,7 +80,6 @@ const loginUser = (userLogin) => {
 }
 
 const updateUser = (id, data) => {
-    console.log('id', id)
     return new Promise(async(resolve, reject) => {
         try {
             const idValue = typeof id === 'object' ? id.id : id;
@@ -131,6 +132,20 @@ const deleteUser = (id, data) => {
     })
 }
 
+const deleteManyUser = (ids) => {
+    return new Promise(async(resolve, reject) => {
+        try {
+             await User.deleteMany({_id : ids})
+            resolve({
+                status: 'OK',
+                message: 'Delete many user susscess',
+            })
+        } catch (e) {
+            reject(e)
+        }
+    })
+}
+
 const getAllUser = () => {
     return new Promise(async(resolve, reject) => {
         try {
@@ -138,7 +153,7 @@ const getAllUser = () => {
 
             resolve({
                 status: 'OK',
-                message: 'Delete user susscess',
+                message: 'get all user susscess',
                 data: allUser
             })
         } catch (e) {
@@ -180,5 +195,5 @@ module.exports = {
     deleteUser,
     getAllUser,
     getDetailsUser,
-    
+    deleteManyUser
 }

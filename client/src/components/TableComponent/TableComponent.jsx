@@ -1,72 +1,70 @@
-import { Divider, Radio, Table } from 'antd';
-import React, { useState } from 'react'
+import { Table } from "antd";
+import React, { useState, useRef } from "react";
+import Loading from "../LoadingComponent/LoadingComponent";
+import { DownloadTableExcel } from "react-export-table-to-excel";
 
+const TableComponent = (props) => {
+  const {
+    isPending = false,
+    data = [],
+    columns = [],
+    handleDeleteMany,
+  } = props;
+  const [selectionType, setSelectionType] = useState("checkbox");
+  const [rowSelectedKey, setRowSelecteKey] = useState([]);
+  const tableRef = useRef(null);
 
-const columns = [
-    {
-      title: 'Name',
-      dataIndex: 'name',
-      render: (text) => <a>{text}</a>,
+  const rowSelection = {
+    onChange: (selectedRowKeys, selectedRows) => {
+      setRowSelecteKey(selectedRowKeys);
+      console.log(`selectedRowKeys: ${selectedRowKeys}`);
     },
-    {
-      title: 'Age',
-      dataIndex: 'age',
-    },
-    {
-      title: 'Address',
-      dataIndex: 'address',
-    },
-  ];
-  const data = [
-    {
-      key: '1',
-      name: 'John Brown',
-      age: 32,
-      address: 'New York No. 1 Lake Park',
-    },
-    {
-      key: '2',
-      name: 'Jim Green',
-      age: 42,
-      address: 'London No. 1 Lake Park',
-    },
-    {
-      key: '3',
-      name: 'Joe Black',
-      age: 32,
-      address: 'Sydney No. 1 Lake Park',
-    },
-    {
-      key: '4',
-      name: 'Disabled User',
-      age: 99,
-      address: 'Sydney No. 1 Lake Park',
-    },
-  ];
+    getCheckboxProps: (record) => ({
+      disabled: record.name === "Disabled User",
+      name: record.name,
+    }),
+  };
 
-const TableComponent = () => {
-    const [selectionType, setSelectionType] = useState('checkbox');
-
-    const rowSelection = {
-        onChange: (selectedRowKeys, selectedRows) => {
-          console.log(`selectedRowKeys: ${selectedRowKeys}`, 'selectedRows: ', selectedRows);
-        },
-        getCheckboxProps: (record) => ({
-          disabled: record.name === 'Disabled User',
-          name: record.name,
-        }),
-      };
+  const handleDeleteAll = () => {
+    console.log("Deleting all selected rows:", rowSelectedKey);
+    handleDeleteMany(rowSelectedKey);
+  };
 
   return (
+    <Loading isLoading={isPending}>
+      {rowSelectedKey.length > 0 && (
+        <div
+          style={{
+            background: "green",
+            color: "#fff",
+            padding: "10px",
+            cursor: "pointer",
+            fontSize: "15px",
+          }}
+          onClick={handleDeleteAll}
+        >
+          Xoá tất cả
+        </div>
+      )}
+      <DownloadTableExcel
+        filename="users table"
+        sheet="users"
+        currentTableRef={tableRef.current.nativeElement}
+      >
+        <button> Export excel </button>
+      </DownloadTableExcel>
       <Table
+        ref={tableRef}
         rowSelection={{
           type: selectionType,
           ...rowSelection,
         }}
         columns={columns}
         dataSource={data}
+        {...props}
       />
-  )
-}
+    </Loading>
+  );
+};
 
-export default TableComponent
+export default TableComponent;

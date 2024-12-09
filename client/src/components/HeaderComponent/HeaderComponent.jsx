@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Col, Badge, Button, Popover } from "antd";
+import { Col, Badge, Popover } from "antd";
 import { WrapperHeader, WrapperTextHeader,WrapperHeaderAccount,WrapperHeaderTextSmall,
   WrapperContentPopup
  } from "./style";
@@ -14,6 +14,7 @@ import { useDispatch, useSelector } from "react-redux";
 import * as UserService from '../../service/UserService'
 import { resetUser } from "../../redux/slides/userSlide";
 import Loading from "../LoadingComponent/LoadingComponent";
+import { searchProduct } from "../../redux/slides/productSlide";
 
 
 const HeaderComponent = ({isHiddenCart=false, isHiddenSearch=false}) => {
@@ -22,6 +23,7 @@ const HeaderComponent = ({isHiddenCart=false, isHiddenSearch=false}) => {
   const [isLoading, setIsLoading] = useState(false)
   const [userName, setUserName] = useState('')
   const [avatar, setAvatar] = useState('')
+  const [search, setSearch] = useState('')
 
   const handleNavigateLogin = () => {
     navigate('/sign-in')
@@ -42,6 +44,12 @@ const HeaderComponent = ({isHiddenCart=false, isHiddenSearch=false}) => {
     setIsLoading(false)
   },[user?.name, user?.avatar])
 
+  const onSearch = (e) =>{
+    setSearch(e.target.value)
+    dispatch(searchProduct(e.target.value))
+    console.log('e',e.target.value)
+  }
+
   const content = (
     <div>
       <WrapperContentPopup onClick={() => {
@@ -59,7 +67,7 @@ const HeaderComponent = ({isHiddenCart=false, isHiddenSearch=false}) => {
     <div>
       <WrapperHeader style={{justifyContent: isHiddenCart && isHiddenSearch ? 'space-between' : 'unset'}}>
         <Col span={6}>
-          <WrapperTextHeader>NVAM</WrapperTextHeader>
+          <WrapperTextHeader onClick={()=> navigate('/')}>NVAM</WrapperTextHeader>
         </Col>
         {!isHiddenSearch &&(
            <Col span={12}>
@@ -67,7 +75,7 @@ const HeaderComponent = ({isHiddenCart=false, isHiddenSearch=false}) => {
              placeholder="input search text"
              textButton="Tìm kiếm"
              size="large"
-             // onSearch={onSearch}
+             onChange={onSearch}
            />
          </Col>
         )}

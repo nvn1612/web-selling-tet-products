@@ -2,7 +2,7 @@ const UserService = require('../services/UserService')
 const JwtService = require('../services/jwtService')
 const createUser = async (req, res) => {
     try {
-        const {email, password, confirmPassword} = req.body
+        const {name, phone, email, password, confirmPassword} = req.body
         const reg = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/
         const isCheckEmail = reg.test(email)
         if(!email || !password || !confirmPassword) {
@@ -84,9 +84,6 @@ const updateUser = async (req, res) => {
 const deleteUser = async (req, res) => {
     try {
         const userId = req.params.id
-        const token = req.headers
-        console.log('token', token)
-        console.log('userId', userId)
         if(!userId){
             return res.status(200).json({
                 status: 'ERR',
@@ -94,6 +91,25 @@ const deleteUser = async (req, res) => {
             })
         }
         const response = await UserService.deleteUser(userId)
+        return res.status(200).json(response)
+    } catch (e) {
+        return res.status(404).json({
+            message: e
+        })
+    }
+}
+
+
+const deleteMany = async (req, res) => {
+    try {
+        const ids = req.body
+        if(!ids){
+            return res.status(200).json({
+                status: 'ERR',
+                message: 'The ids is required'
+            })
+        }
+        const response = await UserService.deleteManyUser(ids)
         return res.status(200).json(response)
     } catch (e) {
         return res.status(404).json({
@@ -170,5 +186,6 @@ module.exports = {
     getAllUser,
     getDetailsUser,
     refreshToken,
-    logoutUser
+    logoutUser,
+    deleteMany
 }
