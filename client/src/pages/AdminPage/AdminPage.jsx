@@ -1,9 +1,11 @@
 import React, { useState } from 'react';
-import { AppstoreOutlined, SettingOutlined, UserOutlined } from '@ant-design/icons';
+import { AppstoreOutlined, ShoppingCartOutlined, UserOutlined } from '@ant-design/icons';
 import { Menu } from 'antd';
 import HeaderComponent from '../../components/HeaderComponent/HeaderComponent';
 import AdminUser from '../../components/AdminUser/AdminUser';
 import AdminProduct from '../../components/AdminProduct/AdminProduct';
+import OrderAdmin from '../../components/OrderAdmin/OrderAdmin';
+
 const items = [
     {
       key: 'user',
@@ -17,19 +19,28 @@ const items = [
       icon: <AppstoreOutlined />,
     
     },
+    {
+      key: 'order',
+      label: 'Đơn hàng',
+      icon: <ShoppingCartOutlined />,
+    
+    },
   ];
 
 
   const renderPage = (key) => {
     switch(key) {
       case 'user': 
-        console.log('current', key)
         return (
           <AdminUser/>
         )
       case 'product': 
         return (
           <AdminProduct/>
+        )
+        case 'order': 
+        return (
+          <OrderAdmin/>
         )
         default:
           return <></>
@@ -41,9 +52,10 @@ const AdminPage = () => {
 
       const [current, setCurrent] = useState('');
       const onClick = (e) => {
-        console.log('click ', e);
         setCurrent(e.key);
       };
+  
+
   return (
     <>
         <HeaderComponent isHiddenCart isHiddenSearch/>

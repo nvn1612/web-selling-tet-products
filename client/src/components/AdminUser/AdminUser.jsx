@@ -103,7 +103,6 @@ const AdminUser = () => {
   
     const handleOnchangeAvatarDetail = async({fileList}) =>{
       const file = fileList[0]
-      console.log('file',file)
       if (!file.url && !file.preview) {
         file.preview = await getBase64(file.originFileObj);
       }
@@ -141,8 +140,7 @@ const AdminUser = () => {
         }
   
       const getAllUsers = async() =>{
-        const res = await UserService.getAllUser()
-        console.log('res',res)
+        const res = await UserService.getAllUser(user?.access_token)
         return res
       } 
   

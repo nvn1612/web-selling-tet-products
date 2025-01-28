@@ -72,7 +72,6 @@ const ProfilePage = () => {
   }
   const handleOnchangeAvatar = async({fileList}) =>{
     const file = fileList[0]
-    console.log('file',file)
     if (!file.url && !file.preview) {
       file.preview = await getBase64(file.originFileObj);
     }
@@ -90,22 +89,22 @@ const ProfilePage = () => {
             <WrapperInput>
               <WrapperLable htmlFor='name'>Name</WrapperLable>
               <InputForm placeholder={'nambnbn'} style={{width:'300px'}}  value={name} onChange={handleOnchangeName} id="name"/>
-              <ButtonComponent textButton={'Cập nhập'} styleButton={{background: 'white' }} onClick={handleUpdate}/>
+              <ButtonComponent textbutton={'Cập nhập'} styleButton={{background: 'white' }} onClick={handleUpdate}/>
             </WrapperInput>
             <WrapperInput>
               <WrapperLable htmlFor='email'>Email</WrapperLable>
               <InputForm placeholder={'abc123@gmail.com'} style={{width:'300px'}}  value={email} onChange={handleOnchangeEmail} id="email"/>
-              <ButtonComponent textButton={'Cập nhập'} styleButton={{background: 'white' }} onClick={handleUpdate}/>
+              <ButtonComponent textbutton={'Cập nhập'} styleButton={{background: 'white' }} onClick={handleUpdate}/>
             </WrapperInput>
             <WrapperInput>
               <WrapperLable htmlFor='phone'>Phone</WrapperLable>
               <InputForm placeholder={'0927384372'} style={{width:'300px'}}  value={phone} onChange={handleOnchangePhone} id="phone"/>
-              <ButtonComponent textButton={'Cập nhập'} styleButton={{background: 'white' }} onClick={handleUpdate}/>
+              <ButtonComponent textbutton={'Cập nhập'} styleButton={{background: 'white' }} onClick={handleUpdate}/>
             </WrapperInput>
             <WrapperInput>
               <WrapperLable htmlFor='address'>Address</WrapperLable>
               <InputForm placeholder={'thanh xuan ha noi'} style={{width:'300px'}}  value={address} onChange={handleOnchangeAddress} id="address"/>
-              <ButtonComponent textButton={'Cập nhập'} styleButton={{background: 'white' }} onClick={handleUpdate}/>
+              <ButtonComponent textbutton={'Cập nhập'} styleButton={{background: 'white' }} onClick={handleUpdate}/>
             </WrapperInput>
             <WrapperInput>
               <WrapperLable htmlFor='avatar'>Avatar</WrapperLable>
@@ -122,7 +121,7 @@ const ProfilePage = () => {
                 }} alt="avatar"/>
               )}
               {/* <InputForm placeholder={''} style={{width:'300px'}}  value={avatar} onChange={handleOnchangeAvatar} id="avatar"/> */}
-              <ButtonComponent textButton={'Cập nhập'} styleButton={{background: 'white' }} onClick={handleUpdate}/>
+              <ButtonComponent textbutton={'Cập nhập'} styleButton={{background: 'white' }} onClick={handleUpdate}/>
             </WrapperInput>
           </WrapperContentProfile>
         </Loading>

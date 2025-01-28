@@ -1,5 +1,5 @@
 import { Row, Image, Col, InputNumber } from 'antd'
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import ButtonComponent from '../ButtonComponent/ButtonComponent'
 import ImageProduct from "../../assets/images/ImageDetail.jpg"
 import { StarFilled, PlusOutlined, MinusOutlined } from '@ant-design/icons';
@@ -10,10 +10,17 @@ WrapperPriceTextProduct,WrapperPriceProduct,WrapperAddressProduct,WrapperQuality
 import * as ProductService from "../../service/ProductService"
 import { useQuery } from '@tanstack/react-query';
 import Loading from '../LoadingComponent/LoadingComponent';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
+import { useLocation, useNavigate } from 'react-router-dom';
+import {addOrderProduct} from '../../redux/slides/orderSlide'
+import { convertPrice, initFacebookSDK } from '../../ultis';
+import LikeButtonComponent from '../LikeButtonComponent/LikeButtonComponent';
+import CommentComponent from '../CommentComponent/CommentComponent';
 
 
 const ProductDetailComponent = ({idProduct}) => {
+
+
     //address user
      
     const user = useSelector((state) => state.user)
@@ -32,6 +39,8 @@ const ProductDetailComponent = ({idProduct}) => {
             setNumProduct(numProduct - 1)
         }
     }
+
+    
     //get detail product
 
     const fetchDetailProduct = async(context) =>{
@@ -49,7 +58,6 @@ const ProductDetailComponent = ({idProduct}) => {
         enable: !!idProduct
       });
 
-      console.log('pdt', productDetails)
 
       //render star
 
@@ -60,6 +68,36 @@ const ProductDetailComponent = ({idProduct}) => {
         }
         return stars;
       };
+
+      
+    //add order
+    const dispath = useDispatch()
+    const navigate = useNavigate()
+    const location = useLocation()
+    const handleAddOrder = () => {
+        if(!user?.id)
+            {
+                navigate('/sign-in',{state: location?.pathname})
+            }
+        else{
+            dispath(addOrderProduct({
+                orderItem: {
+                    name: productDetails?.name,
+                    amount: numProduct, 
+                    image: productDetails?.image,
+                    price:  productDetails?.price,
+                    product: productDetails?._id,
+                    discount: productDetails?.discount,
+                    countInStock: productDetails?.countInStock
+                }
+            }))
+        }
+    }
+
+    //public fb
+    useEffect(()=>{
+        initFacebookSDK()
+    },[])
 
   return (
     <Loading isLoading={isPending}>
@@ -100,7 +138,7 @@ const ProductDetailComponent = ({idProduct}) => {
                 </div>
                 <WrapperPriceProduct>
                     <WrapperPriceTextProduct>
-                        {productDetails?.price}đ
+                        {convertPrice(productDetails?.price)}
                     </WrapperPriceTextProduct>
                 </WrapperPriceProduct>
                 <WrapperAddressProduct>
@@ -112,6 +150,11 @@ const ProductDetailComponent = ({idProduct}) => {
                     </span> -
                     <span className='change-address'>Đổi địa chỉ</span>
                 </WrapperAddressProduct>
+                <LikeButtonComponent dataHref={
+                    process.env.REACT_APP_IN_LOCAL ?
+                    "https://developers.facebook.com/docs/plugins/"
+                    : window.location.href
+                    }/>
                 <div style={{margin:'10px 0 20px', padding:'10px 0', borderTop:'1px solid #e5e5e5', borderBottom:'1px solid #e5e5e5'}}>
                     <div style={{marginBottom:'10px'}}>
                         Số lượng
@@ -120,18 +163,25 @@ const ProductDetailComponent = ({idProduct}) => {
                         <button style={{border: 'none', background: 'transparent', cursor: 'pointer'}} onClick={()=>handleChangeCount('decrease')}>
                             <MinusOutlined style={{color: '#000', fontSize: '20px'}} />
                         </button>
-                        <WrapperInputNumber defaultValue={1} onChange={OnChange} value={numProduct} />
+                        <WrapperInputNumber defaultValue={1} onChange={OnChange} value={numProduct}  min={1} max={productDetails?.countInStock}/>
                         <button style={{border: 'none', background: 'transparent', cursor: 'pointer'}} onClick={()=>handleChangeCount('increase')}>
                             <PlusOutlined style={{color: '#000', fontSize: '20px'}}/>
                         </button>
                     </WrapperQualityProduct>
                 </div>
                 <div style={{display: 'flex', alignItems: 'center', gap:'10px'}}>
-                    <ButtonComponent textButton={'Chọn mua'} styleButton={{background: 'red', color:'white', border: 'none'}}/>
-                    <ButtonComponent textButton={'Mua trả sau'} styleButton={{background: 'white' }}/>
+                    <ButtonComponent textbutton={'Chọn mua'} styleButton={{background: 'red', color:'white', border: 'none'}}
+                    onClick={handleAddOrder}
+                    />
+                    <ButtonComponent textbutton={'Mua trả sau'} styleButton={{background: 'white' }}/>
                     
                 </div>
             </Col>
+            <CommentComponent dataHref={
+                 process.env.REACT_APP_IN_LOCAL ?
+                "https://developers.facebook.com/docs/plugins/comments#configurator"
+                : window.location.href
+                } width="1270"/>
         </Row>
     </Loading>
   )

@@ -86,7 +86,6 @@ const updateUser = (id, data) => {
             const checkUser = await User.findOne({
                 _id: idValue
             })
-            console.log('checkUser', checkUser)
             if(checkUser === null){
                 resolve({
                     status: 'OK',
@@ -107,14 +106,12 @@ const updateUser = (id, data) => {
 
 
 const deleteUser = (id, data) => {
-    console.log('id', id)
     return new Promise(async(resolve, reject) => {
         try {
             const idValue = typeof id === 'object' ? id.id : id;
             const checkUser = await User.findOne({
                 _id: idValue
             })
-            console.log('checkUser', checkUser)
             if(checkUser === null){
                 resolve({
                     status: 'OK',

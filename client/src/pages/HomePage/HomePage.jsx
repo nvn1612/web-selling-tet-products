@@ -14,28 +14,18 @@ import { useRef } from 'react'
 import Loading from '../../components/LoadingComponent/LoadingComponent'
 import { useDebounce } from '../../hooks/useDebounce'
 const HomePage = () => {
-  const arr = ['Bánh kẹo', 'Quần áo', 'Đồ trang trí' ]
-  const refSearch = useRef()
-  const [stateProduct,setStateProduct] = useState([])
   const [isLoading,setIsLoading] = useState(false)
+  const [typeProduct,setTypeProduct] = useState([])
   const searchProduct = useSelector((state) => state.product?.search)
-  const searchDebounce = useDebounce(searchProduct,1000)
+  const searchDebounce = useDebounce(searchProduct,500)
   const [limit, setLimit] = useState(6)
 
 
   const fetchProductAll = async (context) => {
         const limit = context?.queryKey && context?.queryKey[1]
         const search = context?.queryKey && context?.queryKey[2]
-
         const res = await ProductService.getAllProduct(search, limit)
-        // if(search?.length > 0 || refSearch.current)
-        //   {
-        //     setStateProduct(res?.data)
-        //     return []
-        //   }
-        //   else{
-        //   }
-          return res
+        return res
   }
  
 
@@ -47,16 +37,25 @@ const HomePage = () => {
     keepPreviousData: true
   });
 
-  // useEffect(()=>{
-  //   if(products?.data?.length > 0){
-  //     setStateProduct(products?.data)
-  //   }
-  // },[products])
+  //fetch all type product
+
+  const fetchTypeProduct = async () =>{
+    const res = await ProductService.getAllType()
+    if(res?.status === 'OK'){
+      setTypeProduct(res?.data)
+    }
+  }
+
+  useEffect(() => {
+    fetchTypeProduct()
+  },[])
+  
+
   return (
     <Loading isLoading={isPending || isLoading}>
     <div style={{width: '1270px',  margin:'0 auto'}}>
       <WrapperTypeProduct>
-        {arr.map((item) => {
+        {typeProduct.map((item) => {
           return (
             <TypeProduct name={item} key={item} />
           )
@@ -87,7 +86,7 @@ const HomePage = () => {
             
         </WrapperProducts>
         <div style={{display:'flex', justifyContent: 'center', marginTop:'10px'}}>
-            <ButtonComponent textButton='Xem thêm' styleButton={{width: '240px'}}
+            <ButtonComponent textbutton='Xem thêm' styleButton={{width: '240px'}}
             onClick={()=> setLimit((prev) => prev + 6)}
             disabled={products?.total === products?.data?.length || products.totalPage === 1}/>
         </div>

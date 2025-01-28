@@ -3,6 +3,7 @@ import { WrapperCardStyle,StyleNameProduct, WrapperPriceText, WrapperReportText,
 import {lled} from '@ant-design/icons'
 import Logo from '../../assets/images/logo.jpg'
 import { useNavigate } from 'react-router-dom';
+import { convertPrice } from "../../ultis";
 
 const CardComponent = (props) => {
   const {  
@@ -22,15 +23,16 @@ const CardComponent = (props) => {
   }
   return (
       <WrapperCardStyle
-        hoverable
-        style={{ width: 200 }}
-        cover={
-          <img
-            alt="example"
-            src={image}
-          />
-        }
-        onClick={() => handleDetailProduct(id)}
+      hoverable
+      style={{ width: 200 }}
+      cover={
+        <img
+          alt="example"
+          src={image}
+        />
+      }
+      onClick={() => countInStock !== 0 && handleDetailProduct(id)}
+      disabled={countInStock === 0}
       >
         <img src={Logo} alt="" style={{width: '50px', height: '50px', position: 'absolute', top: '0', left: '0'}}/>
         <StyleNameProduct>{name}</StyleNameProduct>
@@ -38,10 +40,10 @@ const CardComponent = (props) => {
             <span style={{marginRight: '4px'}}>
                 <span>{rating}</span>
                 <lled style={{fontSize: '12px', color: 'yellow'}}/>
-                <span> | Đã bán 1000+</span>
+                <span> | Đã bán {selled ||1000} +</span>
             </span>
         </WrapperReportText>
-        <WrapperPriceText>{price.toLocaleString()}
+        <WrapperPriceText>{convertPrice(price)}
              <WrapperDiscountText> -{discount || 5}%</WrapperDiscountText>
         </WrapperPriceText>
       </WrapperCardStyle>

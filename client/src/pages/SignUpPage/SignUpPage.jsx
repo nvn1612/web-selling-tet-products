@@ -54,7 +54,7 @@ const SignUpPage = () => {
               <InputForm placeholder={'Confirm password'} type="password" value={confirmPassword} onChange={handleOnchangeConfirmPassword}/>
               {data?.status ==='ERR' && <span style={{color: 'red'}}>{data?.message}</span>}
               <Loading isLoading={isPending}>
-                <ButtonComponent disabled={!email.length || !password.length || !confirmPassword.length} textButton={'Đăng kí'} styleButton={{background: 'red', color:'white', border: 'none', width:'100%', margin:'26px 0 10px'}}
+                <ButtonComponent disabled={!email.length || !password.length || !confirmPassword.length} textbutton={'Đăng kí'} styleButton={{background: 'red', color:'white', border: 'none', width:'100%', margin:'26px 0 10px'}}
                 onClick={handleSignUp}
                 />  
               </Loading>

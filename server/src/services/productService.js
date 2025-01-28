@@ -1,7 +1,7 @@
 const Product = require("../models/ProductModel")
 const createProduct = (newUser) => {
     return new Promise(async(resolve, reject) => {
-        const {name, image, type, price, countInStock, rating, description} = newUser
+        const {name, image, type, price, countInStock, rating, description, discount} = newUser
         try {
             const checkProduct = await Product.findOne({
                 name: name
@@ -18,9 +18,10 @@ const createProduct = (newUser) => {
                 image,
                 type, 
                 price, 
-                countInStock, 
+                countInStock: Number(countInStock), 
                 rating, 
-                description
+                description,
+                discount: Number(discount)
             })
 
         if(newProduct) {
@@ -64,6 +65,7 @@ const getAllProduct = (limit, page, sort, filter) => {
     return new Promise(async(resolve, reject) => {
         try {
             const totalProduct = await Product.countDocuments();
+            let allProduct
             if(filter) {
                 const label = filter[0];
                 const allObjectFilter = await Product.find({[label]: {'$regex': filter[1]}}).limit(limit).skip(page*limit)
@@ -89,7 +91,13 @@ const getAllProduct = (limit, page, sort, filter) => {
                     totalPage: Math.ceil(totalProduct / limit)
                 })
             }
-            const allProduct = await Product.find().limit(limit).skip(page*limit)
+            if(!limit)
+                {
+                    allProduct = await Product.find().limit(limit).skip(page*limit)
+
+                }else{
+                    allProduct = await Product.find().limit(limit).skip(page*limit)
+                }
             resolve({
                 status: 'OK',
                 message: 'get all product susscess',
@@ -97,6 +105,21 @@ const getAllProduct = (limit, page, sort, filter) => {
                 total: totalProduct,
                 pageCurrent: page + 1,
                 totalPage: Math.ceil(totalProduct / limit)
+            })
+        } catch (e) {
+            reject(e)
+        }
+    })
+}
+
+const getAllType = () => {
+    return new Promise(async(resolve, reject) => {
+        try {
+            const allType = await Product.distinct('type')
+            resolve({
+                status: 'OK',
+                message: 'get all product susscess',
+                data: allType
             })
         } catch (e) {
             reject(e)
@@ -171,5 +194,6 @@ module.exports = {
     getDetailsProduct,
     deleteProduct,
     getAllProduct,
-    deleteManyProduct
+    deleteManyProduct,
+    getAllType
 }

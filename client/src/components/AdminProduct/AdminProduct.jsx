@@ -1,11 +1,11 @@
 import React, { useEffect, useRef, useState } from 'react'
 import { WrapperHeader } from './style'
-import { Button, Form,  Space } from 'antd'
+import { Button, Form,  Select,  Space } from 'antd'
 import {PlusOutlined,UploadOutlined, EditOutlined, DeleteOutlined,SearchOutlined} from '@ant-design/icons'
 import TableComponent from '../TableComponent/TableComponent'
 import InputComponent from '../InputComponent/InputComponent'
 import { WrapperUploadFile } from './style'
-import { getBase64 } from '../../ultis'
+import { getBase64, renderOptions } from '../../ultis'
 import { useMutationHooks } from '../../hooks/useMutationHook'
 import Loading from '../../components/LoadingComponent/LoadingComponent'
 import * as ProductService from "../../service/ProductService"
@@ -20,6 +20,7 @@ const AdminProduct = () => {
   const [isOpenDrawer, setIsOpenDrawer] = useState(false);
   const [isLoadingUpdate,SetIsLoadingUpdate] = useState(false);
   const [isModalOpenDelete,setIsModalOpenDelete] = useState(false);
+  const [typeSelect,setTypeSelect] = useState('')
 
   //search
  
@@ -33,7 +34,9 @@ const AdminProduct = () => {
       countInStock: '',
       type: '',
       rating: '',
-      description: ''
+      description: '',
+      newType: '',
+      discount: '' 
       
   })
   const [stateProductDetail, setStateProductDetail] = useState({
@@ -43,8 +46,8 @@ const AdminProduct = () => {
     countInStock: '',
     type: '',
     rating: '',
-    description: ''
-    
+    description: '',
+    discount: ''    
 })
   const user = useSelector((state)=>state?.user)
   const [form] = Form.useForm();
@@ -61,7 +64,6 @@ const AdminProduct = () => {
   const fetchDetailProduct = async(rowSelected) =>{
     
     const res = await ProductService.getDetailProduct(rowSelected)
-    console.log('res',res.data)
     if(res?.data) {
       setStateProductDetail({
         name: res?.data.name,
@@ -70,7 +72,8 @@ const AdminProduct = () => {
         countInStock: res?.data.countInStock,
         type: res?.data.type,
         rating: res?.data.rating,
-        description: res?.data.description
+        description: res?.data.description,
+        discount: res?.data.discount
       })
     }
     SetIsLoadingUpdate(false)
@@ -105,7 +108,8 @@ const AdminProduct = () => {
       countInStock: '',
       type: '',
       rating: '',
-      description: ''
+      description: '',
+      discount: ''
     })
     form.resetFields();
   };
@@ -142,7 +146,6 @@ const AdminProduct = () => {
 
   const handleOnchangeAvatar = async({fileList}) =>{
     const file = fileList[0]
-    console.log('file',file)
     if (!file.url && !file.preview) {
       file.preview = await getBase64(file.originFileObj);
     }
@@ -153,7 +156,6 @@ const AdminProduct = () => {
   }
   const handleOnchangeAvatarDetail = async({fileList}) =>{
     const file = fileList[0]
-    console.log('file',file)
     if (!file.url && !file.preview) {
       file.preview = await getBase64(file.originFileObj);
     }
@@ -172,7 +174,8 @@ const AdminProduct = () => {
         countInStock,
         type,
         rating,
-        description} = data
+        description,
+        discount } = data
         const res = ProductService.createProduct({
           name,
           image,
@@ -180,7 +183,8 @@ const AdminProduct = () => {
           countInStock,
           type,
           rating,
-          description
+          description,
+          discount
         })
         return res
       }
@@ -384,7 +388,17 @@ const AdminProduct = () => {
 
 
     const onFinish = () => {
-      mutation.mutate(stateProduct,{
+      const params = {
+        name: stateProduct.name,
+        image: stateProduct.image,
+        price: stateProduct.price,
+        countInStock: stateProduct.countInStock,
+        type: stateProduct.type === 'add_type' ? stateProduct.newType : stateProduct.type,
+        rating: stateProduct.rating,
+        description: stateProduct.description,
+        discount: stateProduct.discount
+      }
+      mutation.mutate(params,{
         onSettled: () => {
           queryProduct.refetch()
         }
@@ -453,6 +467,27 @@ const AdminProduct = () => {
         message.error()
       }
     }, [isSuccessDeleteMany, isErrorDeleteMany])
+
+    //get type
+
+    const fetchTypeProduct = async () =>{
+      const res = await ProductService.getAllType()
+      return res
+    }
+
+    const typeProduct = useQuery({queryKey: ['type-product'],queryFn: fetchTypeProduct})
+
+    // type select 
+    const onChangeSelect = (value) =>{
+          setStateProduct({
+            ...stateProduct,
+            type: value
+    
+          })
+      
+
+    }
+   
 
 
   return (
@@ -533,8 +568,30 @@ const AdminProduct = () => {
                     },
                 ]}
                 >
-                <InputComponent value={stateProduct.type} onChange={handleOnChange} name='type'/>
+                <Select
+                  name='type'
+                  value={stateProduct.type}
+                  style={{ width: 120 }}
+                  onChange={onChangeSelect}
+                  options={renderOptions(typeProduct?.data?.data)}
+                  />
+
                 </Form.Item>
+                {stateProduct.type === 'add_type' && (
+
+                  <Form.Item
+                  label="New Type"
+                  name="new-type"
+                  rules={[
+                      {
+                      required: true,
+                      message: 'Please input your type!',
+                      },
+                  ]}
+                  >
+                      <InputComponent value={stateProduct.newType} onChange={handleOnChange} name='newType'/>
+                  </Form.Item>
+                )}
 
                 <Form.Item
                 label="Price"
@@ -563,16 +620,28 @@ const AdminProduct = () => {
                 </Form.Item>
 
                 <Form.Item
-                label="Rating"
-                name="rating"
-                rules={[
-                    {
-                    required: true,
-                    message: 'Please input your rating!',
-                    },
-                ]}
-                >
+                    label="Rating"
+                    name="rating"
+                    rules={[
+                        {
+                        required: true,
+                        message: 'Please input your rating!',
+                        },
+                    ]}
+                    >
                 <InputComponent value={stateProduct.rating} onChange={handleOnChange} name='rating' />
+                </Form.Item>
+                <Form.Item
+                  label="Discount"
+                  name="discount"
+                  rules={[
+                      {
+                      required: true,
+                      message: 'Please input your discount!',
+                      },
+                  ]}
+                >
+                <InputComponent value={stateProduct.discount} onChange={handleOnChange} name='discount' />
                 </Form.Item>
 
                 <Form.Item
@@ -707,6 +776,19 @@ const AdminProduct = () => {
                 ]}
                 >
                 <InputComponent value={stateProductDetail.rating} onChange={handleOnChangeDetail} name='rating' />
+                </Form.Item>
+
+                <Form.Item
+                label="Discount"
+                name="discount"
+                rules={[
+                    {
+                    required: true,
+                    message: 'Please input your discount!',
+                    },
+                ]}
+                >
+                <InputComponent value={stateProductDetail.discount} onChange={handleOnChangeDetail} name='discount' />
                 </Form.Item>
 
                 <Form.Item

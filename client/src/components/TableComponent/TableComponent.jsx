@@ -17,7 +17,6 @@ const TableComponent = (props) => {
   const rowSelection = {
     onChange: (selectedRowKeys, selectedRows) => {
       setRowSelecteKey(selectedRowKeys);
-      console.log(`selectedRowKeys: ${selectedRowKeys}`);
     },
     getCheckboxProps: (record) => ({
       disabled: record.name === "Disabled User",
@@ -26,7 +25,6 @@ const TableComponent = (props) => {
   };
 
   const handleDeleteAll = () => {
-    console.log("Deleting all selected rows:", rowSelectedKey);
     handleDeleteMany(rowSelectedKey);
   };
 
@@ -49,7 +47,7 @@ const TableComponent = (props) => {
       <DownloadTableExcel
         filename="users table"
         sheet="users"
-        currentTableRef={tableRef.current.nativeElement}
+        currentTableRef={tableRef.current ? tableRef.current : null}
       >
         <button> Export excel </button>
       </DownloadTableExcel>

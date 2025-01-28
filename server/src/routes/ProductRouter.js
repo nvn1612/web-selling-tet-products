@@ -10,6 +10,8 @@ router.delete('/delete/:id',authMiddleWare,productController.deleteProduct)
 router.get('/get-all',productController.getAllProduct)
 router.get('/get-all',productController.getAllProduct)
 router.post('/delete-many',authMiddleWare,productController.deleteMany)
+router.get('/get-all-type',productController.getAllType)
+
 
 
 
